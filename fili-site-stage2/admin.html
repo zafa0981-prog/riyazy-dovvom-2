@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مدیریت — ریاضی دوم با فیلی</title><meta name="description" content="آموزش تعاملی ریاضی دوم دبستان با فیلی؛ انیمیشن، بازی و تمرین.">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="site.css"><script src="config.js"></script><script src="access.js"></script><script src="site.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.50.0/dist/umd/supabase.js"></script><script src="backend.js"></script></head>
+<body class="site page-sky"><div id="nav"></div><div class="doc" style="max-width:1000px"><h1>پنل مدیریت</h1><div id="ad">در حال بارگذاری…</div></div>
+<style>.tb2{border-collapse:collapse;width:100%;font-size:15px;margin-bottom:18px}.tb2 td,.tb2 th{border:2px solid #cfe6fa;padding:6px 8px;text-align:start}.tb2 th{background:#fff2c9}.scr{overflow-x:auto}</style>
+<script>
+(async()=>{const s=await requireLogin(),ad=document.getElementById('ad');
+const{data:me}=await sb.from('profiles').select('is_admin').eq('id',s.user.id).single();if(!me?.is_admin){ad.textContent='دسترسی ندارید.';return}
+async function load(){const[{data:o},{data:p},{data:c},{data:l}]=await Promise.all([sb.from('orders').select('*').order('created_at',{ascending:false}).limit(200),sb.from('profiles').select('id,email,full_name'),sb.from('commissions').select('*').order('created_at',{ascending:false}).limit(200),sb.from('wallet_ledger').select('affiliate_id,delta_rial')]);
+const E=Object.fromEntries(p.map(x=>[x.id,x.email])),bal={};l.forEach(x=>bal[x.affiliate_id]=(bal[x.affiliate_id]||0)+x.delta_rial);
+const paid=o.filter(x=>x.status=='paid');
+ad.innerHTML=`<p>کاربران: <b>${fa(p.length)}</b> · سفارش پرداخت‌شده: <b>${fa(paid.length)}</b> · جمع فروش: <b>${money(paid.reduce((a,x)=>a+x.amount_rial,0))}</b></p>
+<h2>معرف‌ها و کیف پول</h2><div class="scr"><table class="tb2"><tr><th>ایمیل</th><th>موجودی</th><th></th></tr>${Object.keys(bal).map(k=>`<tr><td dir="ltr">${E[k]||k}</td><td>${money(bal[k])}</td><td>${bal[k]>0?`<button class="btn3d sm" data-pay="${k}" data-max="${bal[k]}">ثبت واریز</button>`:''}</td></tr>`).join('')||'<tr><td colspan=3>—</td></tr>'}</table></div>
+<h2>سفارش‌ها</h2><div class="scr"><table class="tb2"><tr><th>تاریخ</th><th>خریدار</th><th>مورد</th><th>مبلغ</th><th>وضعیت</th><th>کد پیگیری</th><th></th></tr>${o.map(x=>`<tr><td>${fa(new Date(x.created_at).toLocaleString('fa-IR'))}</td><td dir="ltr">${E[x.user_id]||''}</td><td>${x.kind=='bundle'?'همه':'فصل '+fa(x.chapter_n)}</td><td>${money(x.amount_rial)}</td><td>${x.status}</td><td dir="ltr">${x.ref_id||''}</td><td>${x.status=='paid'?`<button class="btn3d sm b-pink" data-rev="${x.id}">برگشت</button>`:''}</td></tr>`).join('')}</table></div>
+<h2>پورسانت‌ها</h2><div class="scr"><table class="tb2"><tr><th>معرف</th><th>مبلغ</th><th>وضعیت</th></tr>${c.map(x=>`<tr><td dir="ltr">${E[x.affiliate_id]||''}</td><td>${money(x.amount_rial)}</td><td>${x.status}</td></tr>`).join('')||'<tr><td colspan=3>—</td></tr>'}</table></div>
+<p style="font-size:14px">«برگشت» فقط دسترسی و پورسانت را در سایت برمی‌گرداند؛ پول مشتری را باید خودت در پنل زرین‌پال برگردانی.</p>`;
+ad.querySelectorAll('[data-pay]').forEach(b=>b.onclick=async()=>{const v=prompt('مبلغ واریزشده (ریال) — حداکثر '+b.dataset.max,b.dataset.max);if(!v)return;const{data,error}=await sb.rpc('admin_record_payout',{p_aff:b.dataset.pay,p_amount:+v,p_note:'واریز دستی'});if(error||!data.ok)alert('انجام نشد');load()});
+ad.querySelectorAll('[data-rev]').forEach(b=>b.onclick=async()=>{if(!confirm('این خرید برگشت داده شود؟'))return;const{error}=await sb.rpc('reverse_order',{p_order:b.dataset.rev});if(error)alert('انجام نشد');load()})}
+load()})();
+</script><div id="ft"></div>

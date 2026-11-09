@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نتیجه پرداخت — ریاضی دوم با فیلی</title><meta name="description" content="آموزش تعاملی ریاضی دوم دبستان با فیلی؛ انیمیشن، بازی و تمرین.">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="site.css"><script src="config.js"></script><script src="access.js"></script><script src="site.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.50.0/dist/umd/supabase.js"></script><script src="backend.js"></script></head>
+<body class="site page-sky"><div id="nav"></div><div class="doc" style="text-align:center"><img src="a/fili.png" alt="فیلی" style="height:150px"><h1 id="t">در حال بررسی پرداخت…</h1><p id="d">لطفاً صفحه را نبند.</p><p id="b" class="cta" style="justify-content:center"></p>
+<script>
+(async()=>{const q=new URLSearchParams(location.search),t=document.getElementById('t'),d=document.getElementById('d'),b=document.getElementById('b');
+await requireLogin();
+try{const r=await api('/verify',{method:'POST',body:JSON.stringify({order:q.get('order'),status:q.get('Status')})});
+ if(r.status==='paid'){t.textContent='🎉 پرداخت موفق بود!';d.textContent='فصل‌های خریداری‌شده برای همیشه باز شدند.';b.innerHTML='<a class="btn3d b-green" href="chapters.html">رفتن به فصل‌ها</a><a class="btn3d b-blue" href="account.html">حساب من</a>'}
+ else if(r.status==='failed'){t.textContent='پرداخت انجام نشد';d.textContent='اگر مبلغی از حسابت کم شده، معمولاً تا چند ساعت برگشت داده می‌شود.';b.innerHTML='<a class="btn3d" href="chapters.html">بازگشت به فصل‌ها</a>'}
+ else{t.textContent='پرداخت هنوز تأیید نشده';d.textContent='اگر پول از حسابت کم شده، چند دقیقه بعد صفحه «حساب من» را باز کن؛ وضعیت خودکار بررسی می‌شود.';b.innerHTML='<a class="btn3d b-blue" href="account.html">حساب من</a>'}}
+catch(e){t.textContent='خطا در بررسی پرداخت';d.textContent=e.message+' — بعداً صفحه «حساب من» را باز کن.';b.innerHTML='<a class="btn3d b-blue" href="account.html">حساب من</a>'}})();
+</script></div><div id="ft"></div>

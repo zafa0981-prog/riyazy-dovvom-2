@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>حساب من — ریاضی دوم با فیلی</title><meta name="description" content="آموزش تعاملی ریاضی دوم دبستان با فیلی؛ انیمیشن، بازی و تمرین.">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="site.css"><script src="config.js"></script><script src="access.js"></script><script src="site.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.50.0/dist/umd/supabase.js"></script><script src="backend.js"></script></head>
+<body class="site page-sky"><div id="nav"></div><div class="doc" style="text-align:center"><img src="a/fili2.png" alt="فیلی" style="height:110px"><h1>حساب من</h1><div id="ac" style="text-align:start">در حال بارگذاری…</div>
+<script>
+(async()=>{const s=await requireLogin();await claimRef();try{await api('/reconcile',{method:'POST'})}catch(e){}
+const [{data:pf},{data:ent},{data:ord},{data:com},{data:led}]=await Promise.all([sb.from('profiles').select('*').eq('id',s.user.id).single(),sb.from('entitlements').select('chapter_n'),sb.from('orders').select('*').eq('user_id',s.user.id).order('created_at',{ascending:false}),sb.from('commissions').select('*').eq('affiliate_id',s.user.id).order('created_at',{ascending:false}),sb.from('wallet_ledger').select('delta_rial').eq('affiliate_id',s.user.id)]);
+const have=new Set((ent||[]).map(x=>x.chapter_n)),bal=(led||[]).reduce((a,x)=>a+x.delta_rial,0),link=location.origin+location.pathname.replace('account.html','index.html')+'?ref='+pf.referral_code;
+const ST={pending:'در انتظار',paid:'پرداخت‌شده',failed:'ناموفق',refunded:'برگشت‌خورده'};
+document.getElementById('ac').innerHTML=`<p>ایمیل: <b dir="ltr">${s.user.email}</b></p>
+<h2>فصل‌های من</h2><p>${[1,2,...[...have].filter(n=>n>2).sort()].map(n=>`<a class="btn3d sm b-green" style="margin:3px" href="${n<=2?'ch'+n+'.html':'chapter.html?n='+n}">فصل ${fa(n)}</a>`).join('')||''}</p>
+<h2>خریدها</h2>${(ord||[]).length?'<ul>'+ord.map(o=>`<li>${o.kind=='bundle'?'همه فصل‌ها':'فصل '+fa(o.chapter_n)} — ${money(o.amount_rial)} — ${ST[o.status]} — ${fa(new Date(o.created_at).toLocaleDateString('fa-IR'))}</li>`).join('')+'</ul>':'<p>هنوز خریدی نداری.</p>'}
+<h2>همکاری در فروش</h2><p>لینک دعوت تو:</p><p><input id="lk" readonly value="${link}" dir="ltr" style="width:100%;font:inherit;padding:8px;border:3px solid #cfe6fa;border-radius:12px" onclick="this.select()"></p>
+<p>موجودی کیف پول: <b>${money(bal)}</b></p>${(com||[]).length?'<ul>'+com.map(c=>`<li>${money(c.amount_rial)} (${fa(Math.round(c.rate*100))}٪ از ${money(c.base_rial)}) — ${c.status=='reversed'?'برگشت‌خورده':'در کیف پول'}</li>`).join('')+'</ul>':'<p>هنوز پورسانتی ثبت نشده.</p>'}
+<p style="font-size:14px">واریز پورسانت به حساب بانکی فعلاً به‌صورت دستی توسط مدیر انجام می‌شود.</p>
+${pf.is_admin?'<p><a class="btn3d b-pink sm" href="admin.html">پنل مدیریت</a></p>':''}
+<p><button class="btn3d b-blue sm" id="out">خروج از حساب</button></p>`;
+document.getElementById('out').onclick=async()=>{await sb.auth.signOut();location.href='index.html'}})();
+</script></div><div id="ft"></div>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ورود و ثبت‌نام — ریاضی دوم با فیلی</title><meta name="description" content="آموزش تعاملی ریاضی دوم دبستان با فیلی؛ انیمیشن، بازی و تمرین.">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="site.css"><script src="config.js"></script><script src="access.js"></script><script src="site.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.50.0/dist/umd/supabase.js"></script><script src="backend.js"></script></head>
+<body class="site page-sky"><div id="nav"></div><div class="doc" style="text-align:center"><img src="a/fili.png" alt="فیلی" style="height:150px">
+<h1 id="ttl2">ورود به حساب</h1>
+<div class="cta" style="justify-content:center;margin-bottom:10px"><button class="btn3d b-blue sm" id="tl">ورود</button><button class="btn3d b-green sm off" id="ts">ثبت‌نام</button></div>
+<form id="f" style="max-width:340px;margin:auto;text-align:start"><div id="nm" style="display:none"><label>نام (اختیاری)</label><input name="name" autocomplete="name"></div>
+<label>ایمیل</label><input name="email" type="email" required autocomplete="email" dir="ltr"><label>رمز عبور (دست‌کم ۶ نویسه)</label><input name="pw" type="password" required minlength="6" autocomplete="current-password" dir="ltr">
+<div id="msg" class="notice" style="display:none"></div><p style="text-align:center"><button class="btn3d" id="go" type="submit">ورود</button></p></form>
+<style>#f label{display:block;font-weight:800;margin-top:10px}#f input{width:100%;font:inherit;padding:10px 12px;border:3px solid #cfe6fa;border-radius:14px}#f input:focus{outline:0;border-color:var(--blue)}</style>
+<script>
+let mode='in';const $=s=>document.querySelector(s),msg=t=>{const m=$('#msg');m.style.display=t?'block':'none';m.textContent=t||''};
+const nxt=new URLSearchParams(location.search).get('next');const safe=n=>n&&/^[a-z0-9\-]+\.html(\?[A-Za-z0-9=&_\-]*)?$/.test(n)?n:'account.html';
+function sw(m){mode=m;$('#nm').style.display=m=='up'?'block':'none';$('#go').textContent=m=='up'?'ثبت‌نام':'ورود';$('#ttl2').textContent=m=='up'?'ساخت حساب تازه':'ورود به حساب';$('#tl').classList.toggle('off',m=='up');$('#ts').classList.toggle('off',m=='in');msg('')}
+$('#tl').onclick=()=>sw('in');$('#ts').onclick=()=>sw('up');
+session().then(s=>{if(s)location.replace(safe(nxt))});
+$('#f').onsubmit=async e=>{e.preventDefault();msg('');const f=e.target,email=f.email.value.trim(),pw=f.pw.value;$('#go').disabled=true;
+ try{let r;if(mode=='up'){r=await sb.auth.signUp({email,password:pw,options:{data:{full_name:f.name.value.trim()}}});if(r.error)throw r.error;if(!r.data.session){msg('ثبت‌نام انجام شد. برای تأیید، ایمیلت را بررسی کن و بعد وارد شو.');$('#go').disabled=false;return}}
+ else{r=await sb.auth.signInWithPassword({email,password:pw});if(r.error)throw r.error}
+ await claimRef();location.replace(safe(nxt))}catch(x){msg(faErr(x.message));$('#go').disabled=false}};
+</script></div><div id="ft"></div>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فصل‌ها — ریاضی دوم با فیلی</title><meta name="description" content="آموزش تعاملی ریاضی دوم دبستان با فیلی؛ انیمیشن، بازی و تمرین.">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="site.css"><script src="config.js"></script><script src="access.js"></script><script src="site.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.50.0/dist/umd/supabase.js"></script><script src="backend.js"></script></head>
+<body class="site page-sky"><div id="nav"></div>
+<h1 class="sr">خوش اومدی به دنیای ریاضی! آماده‌ای با فیلی ریاضی یاد بگیری؟</h1>
+<div class="pic" id="pic"><a class="pf" href="index.html" title="سلام! من فیلی‌ام؛ بازگشت به خانه"><img src="a/fili.png" alt="فیلی"></a></div>
+<div class="cards" id="cards"></div>
+<p class="legend">🎁 فصل ۱ و ۲ رایگان‌اند &nbsp;·&nbsp; 🔒 فصل‌های ۳ تا ۸ با خرید باز می‌شوند</p>
+<script>
+const C=[[40,402],[414,766],[779,1136],[1148,1503]],R=[[350,633],[646,958]],P=document.getElementById('pic');
+CHAPTERS.forEach((c,i)=>{const[x1,x2]=C[i%4],[y1,y2]=R[i/4|0],a=document.createElement('a');a.className='h'+(c.free?'':' locked');a.href=chapterUrl(c.n);
+a.title=c.free?'فصل '+fa(c.n)+': '+c.t:'فصل '+fa(c.n)+': '+c.t+' — قفل است؛ برای اطلاعات خرید کلیک کن';a.setAttribute('aria-label',a.title);
+a.style.cssText=`left:${x1/1536*100}%;width:${(x2-x1)/1536*100}%;top:${y1/1024*100}%;height:${(y2-y1)/1024*100}%`;if(!c.free)a.innerHTML=lockSvg();P.append(a)});
+document.getElementById('cards').innerHTML=CHAPTERS.map(c=>`<a class="pcard${c.free?'':' locked'}" href="${chapterUrl(c.n)}" style="--c:${c.c};--c2:${c.c2}"><span class="tag">${c.free?'رایگان':'قفل'}</span>${c.free?'':lockSvg()}<b style="margin-top:22px">فصل ${fa(c.n)}</b><span>${c.t}</span><img class="ico" src="a/ci/${c.icon}.png" alt=""></a>`).join('');
+</script><div id="ft"></div><script>
+myEntitlements().then(own=>{if(!own.size)return;
+document.querySelectorAll('#pic a.h.locked').forEach((a,i)=>{const n=+a.href.split('ch=')[1];if(own.has(n)){a.classList.remove('locked');a.href='chapter.html?n='+n;a.innerHTML='';a.title='فصل '+fa(n)+' — باز است'}});
+document.querySelectorAll('#cards a.locked').forEach(a=>{const n=+a.href.split('ch=')[1];if(own.has(n)){a.classList.remove('locked');a.href='chapter.html?n='+n;a.querySelector('.lockb')?.remove();a.querySelector('.tag').textContent='باز شد'}})}).catch(()=>{})
+</script></body></html>
